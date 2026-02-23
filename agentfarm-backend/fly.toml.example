@@ -1,0 +1,20 @@
+# Rename this to fly.toml and update app name after running `fly launch`
+app = "clawville-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DATABASE_PATH = "/data/app.db"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[mounts]
+  source = "clawville_data"
+  destination = "/data"

@@ -35,6 +35,9 @@ export default function Leaderboard({ entries }: LeaderboardProps) {
           <span className="text-yellow-400/80 font-mono text-sm">
             {entry.score.toLocaleString()} pts
           </span>
+          <span className="text-amber-500/60 font-mono text-xs">
+            {entry.sand_dollars} SD
+          </span>
         </div>
       ))}
     </div>

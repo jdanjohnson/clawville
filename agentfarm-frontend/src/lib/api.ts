@@ -18,6 +18,8 @@ export interface Plot {
   watered_at: string | null;
   ready_at: string | null;
   progress_pct: number;
+  health: number;
+  is_dead: boolean;
 }
 
 export interface Parcel {
@@ -27,6 +29,7 @@ export interface Parcel {
   owner_id: number | null;
   owner_name: string | null;
   claimed_at: string | null;
+  price: number;
   plots: Plot[];
 }
 
@@ -50,15 +53,22 @@ export interface CropInfo {
   key: string;
   name: string;
   grow_time_minutes: number;
+  decay_minutes: number;
   points: number;
+  sand_dollar_yield: number;
+  plant_cost: number;
+  unlock_cost: number;
   emoji: string;
   color: string;
+  tier: number;
+  description: string;
 }
 
 export interface LeaderboardEntry {
   rank: number;
   agent_name: string;
   score: number;
+  sand_dollars: number;
 }
 
 export interface Stats {
@@ -67,7 +77,9 @@ export interface Stats {
   total_parcels: number;
   active_crops: number;
   total_points_earned: number;
+  total_sand_dollars: number;
   total_actions: number;
+  total_steals: number;
 }
 
 export interface ChatMsg {

@@ -12,6 +12,7 @@ const STAGE_LABELS: Record<string, string> = {
   sprouting: 'Sprouting',
   growing: 'Growing',
   mature: 'Ready to Harvest!',
+  dead: 'Eaten by Algae!',
 };
 
 export default function ParcelDetail({ parcel, crops, onClose }: ParcelDetailProps) {
@@ -30,7 +31,9 @@ export default function ParcelDetail({ parcel, crops, onClose }: ParcelDetailPro
               Owned by <span className="text-cyan-300">{parcel.owner_name}</span>
             </p>
           ) : (
-            <p className="text-slate-500 text-sm italic">Unclaimed waters</p>
+            <p className="text-slate-500 text-sm italic">
+              Unclaimed waters {parcel.price > 0 ? `- ${parcel.price} Sand Dollars` : '- FREE'}
+            </p>
           )}
         </div>
         <button
@@ -62,19 +65,31 @@ export default function ParcelDetail({ parcel, crops, onClose }: ParcelDetailPro
             >
               {crop ? (
                 <>
-                  <span className="text-xl">{crop.emoji}</span>
-                  <span className="text-[9px] text-cyan-400/80 leading-tight mt-0.5">
-                    {STAGE_LABELS[plot.growth_stage] || plot.growth_stage}
+                  <span className="text-xl">{plot.is_dead ? '💀' : crop.emoji}</span>
+                  <span className={`text-[9px] leading-tight mt-0.5 ${
+                    plot.is_dead ? 'text-red-400' : plot.growth_stage === 'mature' ? 'text-yellow-400' : 'text-cyan-400/80'
+                  }`}>
+                    {STAGE_LABELS[plot.is_dead ? 'dead' : plot.growth_stage] || plot.growth_stage}
                   </span>
                   <div className="w-full mt-1 h-1 bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
-                        plot.growth_stage === 'mature' ? 'bg-yellow-400' : 'bg-cyan-400'
+                        plot.is_dead ? 'bg-red-500' : plot.growth_stage === 'mature' ? 'bg-yellow-400' : 'bg-cyan-400'
                       }`}
                       style={{ width: `${plot.progress_pct}%` }}
                     />
                   </div>
-                  <span className="text-[8px] text-slate-500">{plot.progress_pct}%</span>
+                  {plot.growth_stage === 'mature' && !plot.is_dead && (
+                    <div className="w-full mt-0.5 h-1 bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          plot.health > 0.6 ? 'bg-green-400' : plot.health > 0.3 ? 'bg-yellow-400' : 'bg-red-400'
+                        }`}
+                        style={{ width: `${Math.round(plot.health * 100)}%` }}
+                      />
+                    </div>
+                  )}
+                  <span className="text-[8px] text-slate-500">{plot.progress_pct}%{plot.growth_stage === 'mature' && !plot.is_dead ? ` HP:${Math.round(plot.health * 100)}%` : ''}</span>
                 </>
               ) : (
                 <span className="text-slate-600 text-xs">~</span>
@@ -104,9 +119,14 @@ export default function ParcelDetail({ parcel, crops, onClose }: ParcelDetailPro
       )}
 
       {!parcel.owner_id && (
-        <p className="text-center text-slate-500 text-sm mt-2 italic">
-          This parcel is waiting for an agent to claim it...
-        </p>
+        <div className="text-center mt-2">
+          <p className="text-slate-500 text-sm italic">
+            This parcel is waiting for an agent to claim it...
+          </p>
+          <p className="text-amber-400/70 text-xs mt-1">
+            {parcel.price > 0 ? `Price: ${parcel.price} Sand Dollars` : 'FREE to claim!'}
+          </p>
+        </div>
       )}
     </div>
   );

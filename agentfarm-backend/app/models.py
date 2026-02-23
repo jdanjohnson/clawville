@@ -12,6 +12,7 @@ class AgentResponse(BaseModel):
     name: str
     api_token: str
     score: int
+    sand_dollars: int
     created_at: str
 
 
@@ -21,19 +22,29 @@ class ParcelClaim(BaseModel):
 
 
 class PlantCrop(BaseModel):
-    crop_type: str = Field(..., description="Crop type key, e.g. 'sea_kelp'")
+    crop_type: str = Field(..., description="Crop type key, e.g. 'brain_coral'")
     local_x: int = Field(..., ge=0, lt=3, description="Plot X within parcel (0-2)")
     local_y: int = Field(..., ge=0, lt=3, description="Plot Y within parcel (0-2)")
 
 
 class WaterParcel(BaseModel):
-    local_x: Optional[int] = Field(None, ge=0, lt=3, description="Specific plot X to water (optional, waters all if omitted)")
-    local_y: Optional[int] = Field(None, ge=0, lt=3, description="Specific plot Y to water (optional, waters all if omitted)")
+    local_x: Optional[int] = Field(None, ge=0, lt=3, description="Specific plot X to water (optional)")
+    local_y: Optional[int] = Field(None, ge=0, lt=3, description="Specific plot Y to water (optional)")
 
 
 class HarvestCrop(BaseModel):
     local_x: int = Field(..., ge=0, lt=3, description="Plot X within parcel (0-2)")
     local_y: int = Field(..., ge=0, lt=3, description="Plot Y within parcel (0-2)")
+
+
+class StealRequest(BaseModel):
+    target_parcel_id: int = Field(..., description="Parcel ID to steal from")
+    local_x: int = Field(..., ge=0, lt=3, description="Plot X of mature crop to steal")
+    local_y: int = Field(..., ge=0, lt=3, description="Plot Y of mature crop to steal")
+
+
+class UnlockCropRequest(BaseModel):
+    crop_type: str = Field(..., description="Crop type to unlock in Reef Emporium")
 
 
 class PlotResponse(BaseModel):
@@ -46,6 +57,8 @@ class PlotResponse(BaseModel):
     watered_at: Optional[str] = None
     ready_at: Optional[str] = None
     progress_pct: float = 0.0
+    health: float = 1.0
+    is_dead: bool = False
 
 
 class ParcelResponse(BaseModel):
@@ -55,6 +68,7 @@ class ParcelResponse(BaseModel):
     owner_id: Optional[int] = None
     owner_name: Optional[str] = None
     claimed_at: Optional[str] = None
+    price: int = 0
     plots: list[PlotResponse] = []
 
 
@@ -78,15 +92,22 @@ class LeaderboardEntry(BaseModel):
     rank: int
     agent_name: str
     score: int
+    sand_dollars: int = 0
 
 
 class CropInfo(BaseModel):
     key: str
     name: str
     grow_time_minutes: int
+    decay_minutes: int
     points: int
+    sand_dollar_yield: int
+    plant_cost: int
+    unlock_cost: int
     emoji: str
     color: str
+    tier: int
+    description: str
 
 
 class ChatMessage(BaseModel):
